@@ -49,10 +49,16 @@ export default class App extends React.Component {
             <div className="form-container card">
                 <div className="card">
                     <div className="card-header">
-                        {this.createCardNumbers()}
+                        <div className="container">
+                            <div className="row justify-content-md-center">
+                                {this.createCardNumbers()}
+                            </div>
+                        </div>
                     </div>
                     <div className="card-block">
                         {this.getCard()}
+                    </div>
+                    <div className="card-footer text-center">
                         <div className="btn-group" role="group" aria-label="Basic example">
                             <button
                                 type="button"

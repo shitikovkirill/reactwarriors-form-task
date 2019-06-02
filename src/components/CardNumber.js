@@ -5,8 +5,9 @@ const CardNumber = props => {
         number,
         position
     } = props;
+    let status = number === position ? 'alert-danger' : 'alert-warning';
     return (
-        <div className={number === position ? 'alert alert-danger' : 'alert alert-warning'} role="alert">
+        <div className={status + " alert text-center col col-2 m-2"} role="alert">
             {number}
         </div>
     );
