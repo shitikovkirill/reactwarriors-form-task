@@ -12,15 +12,15 @@ export default class App extends React.Component {
         super();
 
         this.state = {
-            result: [],
+            result: {},
             current_card: 1,
-            cards: [
-                <Basic setClick={click => this.cardsActions[1] = click}/>,
-                <Contacts setClick={click => this.cardsActions[2] = click}/>,
-                <Avatar setClick={click => this.cardsActions[3] = click}/>,
-                <Finish/>
-            ],
         };
+        this.state['cards'] = [
+            <Basic setClick={click => this.cardsActions[1] = click}/>,
+            <Contacts setClick={click => this.cardsActions[2] = click}/>,
+            <Avatar setClick={click => this.cardsActions[3] = click}/>,
+            <Finish result={this.state.result}/>
+        ];
     }
 
     createCardNumbers = () => {
@@ -59,36 +59,50 @@ export default class App extends React.Component {
                         {this.getCard()}
                     </div>
                     <div className="card-footer text-center">
-                        <div className="btn-group" role="group" aria-label="Basic example">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                disabled={this.state.current_card <= 1}
-                                onClick={() => {
-                                    let result = this.cardsActions[this.state.current_card]();
-                                    if (result) {
-                                        this.state.result[this.state.current_card] = result;
+                        {(() => {
+                            if (this.state.current_card === this.state.cards.length) {
+                                return <div className="btn-group" role="group" aria-label="Basic example">
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => {
+                                            this.setState({
+                                                current_card: 1,
+                                                result: {},
+                                            });
+                                        }}
+                                    >
+                                        Reset
+                                    </button>
+                                </div>;
+                            }
+                            return <div className="btn-group" role="group" aria-label="Basic example">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    disabled={this.state.current_card <= 1}
+                                    onClick={() => {
                                         this.changeCurrentCard(-1)
-                                    }
-                                }}
-                            >
-                                Previous
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                disabled={this.state.cards.length <= this.state.current_card}
-                                onClick={() => {
-                                    let result = this.cardsActions[this.state.current_card]();
-                                    if (result) {
-                                        this.state.result[this.state.current_card] = result;
-                                        this.changeCurrentCard(1)
-                                    }
-                                }}
-                            >
-                                Next
-                            </button>
-                        </div>
+                                    }}
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    disabled={this.state.cards.length <= this.state.current_card}
+                                    onClick={() => {
+                                        let result = this.cardsActions[this.state.current_card]();
+                                        if (result) {
+                                            this.state.result[Object.keys(result)[0]] = Object.values(result)[0];
+                                            this.changeCurrentCard(1)
+                                        }
+                                    }}
+                                >
+                                    Next
+                                </button>
+                            </div>;
+                        })()}
                     </div>
                 </div>
             </div>
