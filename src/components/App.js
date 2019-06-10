@@ -31,11 +31,9 @@ export default class App extends React.Component {
     }
 
     onChange = event => {
-        this.setState({
-            values: {
-                [event.target.name]: event.target.value
-            }
-        });
+        let values = {...this.state.values};
+        values[event.target.name] = event.target.value;
+        this.setState({values});
     };
 
     reset = () => {
@@ -46,27 +44,15 @@ export default class App extends React.Component {
 
     submit = () => {
         if (this.state.currentCard === 1) {
-            this.submitBasic();
-        }
-    };
-
-    submitBasic = function () {
-        if (this.validateBasic()) {
-            this.setState({
-                values: {
-                    firstname: this.state.firstname,
-                    lastname: this.state.lastname,
-                    password: this.state.password,
-                    gender: this.state.gender
-                }
-            });
+            if (this.validateBasic()) {
+                this.changeCurrentCard(+1)
+            }
         }
     };
 
     validateBasic = () => {
         const errors = {};
         let values = this.state.values;
-        console.log(values);
         if (!values.firstname) {
             errors.firstname = "Required";
         } else if (values.firstname.length < 5) {
@@ -89,16 +75,11 @@ export default class App extends React.Component {
             errors.repeatPassword = "Must be equal password";
         }
 
-        if (Object.keys(errors).length > 0) {
-            this.setState({
-                errors: errors
-            });
-        } else {
-            this.setState({
-                errors: {}
-            });
-        }
-        return !errors;
+        this.setState({
+            errors: errors
+        });
+
+        return Object.keys(errors).length === 0
     };
 
     createCardNumbers = () => {
@@ -117,6 +98,7 @@ export default class App extends React.Component {
             currentCard: this.state.currentCard + value
         });
     };
+
     render = () => {
         return (
             <div className="form-container card">
