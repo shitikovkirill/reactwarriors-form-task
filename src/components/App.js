@@ -4,24 +4,102 @@ import Basic from "./Basic";
 import Contacts from "./Contacts";
 import Avatar from "./Avatar";
 import Finish from "./Finish";
+import ControlButtons from "./ControlButtons";
 
 export default class App extends React.Component {
-    cardsActions = [];
 
     constructor() {
         super();
 
         this.state = {
-            result: {},
-            current_card: 1,
+            values: {
+                firstname: "",
+                lastname: "",
+                password: "",
+                repeatPassword: "",
+                gender: "male",
+            },
+            errors: {
+                firstname: false,
+                lastname: false,
+                password: false,
+                repeatPassword: false,
+            },
+
+            currentCard: 1,
         };
-        this.state['cards'] = [
-            <Basic setClick={click => this.cardsActions[1] = click}/>,
-            <Contacts setClick={click => this.cardsActions[2] = click}/>,
-            <Avatar setClick={click => this.cardsActions[3] = click}/>,
-            <Finish result={this.state.result}/>
-        ];
     }
+
+    onChange = event => {
+        this.setState({
+            values: {
+                [event.target.name]: event.target.value
+            }
+        });
+    };
+
+    reset = () => {
+        this.setState({
+            currentCard: 1,
+        });
+    };
+
+    submit = () => {
+        if (this.state.currentCard === 1) {
+            this.submitBasic();
+        }
+    };
+
+    submitBasic = function () {
+        if (this.validateBasic()) {
+            this.setState({
+                values: {
+                    firstname: this.state.firstname,
+                    lastname: this.state.lastname,
+                    password: this.state.password,
+                    gender: this.state.gender
+                }
+            });
+        }
+    };
+
+    validateBasic = () => {
+        const errors = {};
+        let values = this.state.values;
+        console.log(values);
+        if (!values.firstname) {
+            errors.firstname = "Required";
+        } else if (values.firstname.length < 5) {
+            errors.firstname = "Must be 5 characters or more";
+        }
+
+        if (!values.lastname) {
+            errors.lastname = "Required";
+        } else if (values.lastname.length < 5) {
+            errors.lastname = "Must be 5 characters or more";
+        }
+
+        if (!values.password) {
+            errors.password = "Required";
+        } else if (values.password < 3) {
+            errors.password = "Must be 3 characters or more";
+        }
+
+        if (values.password !== values.repeatPassword) {
+            errors.repeatPassword = "Must be equal password";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            this.setState({
+                errors: errors
+            });
+        } else {
+            this.setState({
+                errors: {}
+            });
+        }
+        return !errors;
+    };
 
     createCardNumbers = () => {
         let cardNumbers = [];
@@ -29,22 +107,17 @@ export default class App extends React.Component {
             cardNumbers.push(<CardNumber
                 key={i}
                 number={i + 1}
-                position={this.state.current_card}/>);
+                position={this.state.currentCard}/>);
         }
         return cardNumbers;
     };
 
     changeCurrentCard = (value) => {
         this.setState({
-            current_card: this.state.current_card + value
+            currentCard: this.state.currentCard + value
         });
     };
-
-    getCard = () => {
-        return this.state.cards[this.state.current_card - 1]
-    };
-
-    render() {
+    render = () => {
         return (
             <div className="form-container card">
                 <div className="card">
@@ -56,54 +129,24 @@ export default class App extends React.Component {
                         </div>
                     </div>
                     <div className="card-block">
-                        {this.getCard()}
+                        {this.state.currentCard === 1 &&
+                        (<Basic values={this.state.values} errors={this.state.errors} onChange={this.onChange}/>)}
+
+                        {/*{this.state.currentCard === 2 &&
+                        (<Contacts setClick={click => this.cardsActions[2] = click}/>)}
+
+                        {this.state.currentCard === 2 &&
+                        (<Avatar setClick={click => this.cardsActions[3] = click}/>)}
+
+                        {this.state.currentCard === 2 &&
+                        (<Finish result={this.state.result}/>)}*/}
                     </div>
-                    <div className="card-footer text-center">
-                        {(() => {
-                            if (this.state.current_card === this.state.cards.length) {
-                                return <div className="btn-group" role="group" aria-label="Basic example">
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={() => {
-                                            this.setState({
-                                                current_card: 1,
-                                                result: {},
-                                            });
-                                        }}
-                                    >
-                                        Reset
-                                    </button>
-                                </div>;
-                            }
-                            return <div className="btn-group" role="group" aria-label="Basic example">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    disabled={this.state.current_card <= 1}
-                                    onClick={() => {
-                                        this.changeCurrentCard(-1)
-                                    }}
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    disabled={this.state.cards.length <= this.state.current_card}
-                                    onClick={() => {
-                                        let result = this.cardsActions[this.state.current_card]();
-                                        if (result) {
-                                            this.state.result[Object.keys(result)[0]] = Object.values(result)[0];
-                                            this.changeCurrentCard(1)
-                                        }
-                                    }}
-                                >
-                                    Next
-                                </button>
-                            </div>;
-                        })()}
-                    </div>
+                    <ControlButtons
+                        currentCard={this.state.currentCard}
+                        changeCurrentCard={this.changeCurrentCard}
+                        reset={this.reset}
+                        submit={this.submit}
+                    />
                 </div>
             </div>
         );
