@@ -2,6 +2,7 @@ import React from "react";
 import Field from "./Common/Field";
 
 const Basic = props => {
+    let {values, errors} = props;
     return (
         <div className="form card-body">
             <Field
@@ -10,9 +11,9 @@ const Basic = props => {
                 type="text"
                 placeholder="Enter firstname"
                 name="firstname"
-                value={props.values.firstname}
+                value={values.firstname}
                 onChange={props.onChange}
-                error={props.errors.firstname}
+                error={errors.firstname}
             />
             <Field
                 id="lastname"
@@ -20,9 +21,9 @@ const Basic = props => {
                 type="text"
                 placeholder="Enter Lastname"
                 name="lastname"
-                value={props.values.lastname}
+                value={values.lastname}
                 onChange={props.onChange}
-                error={props.errors.lastname}
+                error={errors.lastname}
             />
             <Field
                 id="password"
@@ -30,9 +31,9 @@ const Basic = props => {
                 type="password"
                 placeholder="Enter password"
                 name="password"
-                value={props.values.password}
+                value={values.password}
                 onChange={props.onChange}
-                error={props.errors.password}
+                error={errors.password}
             />
             <Field
                 id="repeatPassword"
@@ -40,9 +41,9 @@ const Basic = props => {
                 type="password"
                 placeholder="Enter repeat password"
                 name="repeatPassword"
-                value={props.values.repeatPassword}
+                value={values.repeatPassword}
                 onChange={props.onChange}
-                error={props.errors.repeatPassword}
+                error={errors.repeatPassword}
             />
             <fieldset className="form-group">
                 <div>Gender</div>
@@ -53,7 +54,7 @@ const Basic = props => {
                         id="male"
                         name="gender"
                         value="male"
-                        checked={props.values.gender === "male"}
+                        checked={values.gender === "male"}
                         onChange={props.onChange}
                     />
                     <label className="form-check-label" htmlFor="male">
@@ -67,7 +68,7 @@ const Basic = props => {
                         id="female"
                         name="gender"
                         value="female"
-                        checked={props.values.gender === "female"}
+                        checked={values.gender === "female"}
                         onChange={props.onChange}
                     />
                     <label className="form-check-label" htmlFor="female">

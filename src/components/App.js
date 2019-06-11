@@ -25,6 +25,9 @@ export default class App extends React.Component {
                 mobile: "",
                 country: countries[0].id,
                 city: "",
+
+                avatar: "https://reactwarriors.github.io/reactwarriors-stage-2/static/media/default-avatar.59337bae.png",
+                loaded: true,
             },
             errors: {
                 firstname: false,
@@ -36,6 +39,8 @@ export default class App extends React.Component {
                 mobile: false,
                 country: false,
                 city: false,
+
+                avatar: false,
             },
 
             currentCard: 1,
@@ -48,9 +53,36 @@ export default class App extends React.Component {
         this.setState({values});
     };
 
+    onChangeAvatar = event => {
+        const reader = new FileReader();
+        reader.onload = event => {
+            let values = {...this.state.values};
+            values['avatar'] = event.target.result;
+            values['loaded'] = true;
+            this.setState({values});
+        };
+
+        reader.readAsDataURL(event.target.files[0]);
+    };
+
     reset = () => {
         this.setState({
             currentCard: 1,
+            values: {
+                firstname: "",
+                lastname: "",
+                password: "",
+                repeatPassword: "",
+                gender: "male",
+
+                email: "",
+                mobile: "",
+                country: countries[0].id,
+                city: "",
+
+                avatar: "https://reactwarriors.github.io/reactwarriors-stage-2/static/media/default-avatar.59337bae.png",
+                loaded: true,
+            },
         });
     };
 
@@ -63,6 +95,11 @@ export default class App extends React.Component {
                 break;
             case 2:
                 if (this.validateContacts()) {
+                    this.changeCurrentCard(+1)
+                }
+                break;
+            case 3:
+                if (this.validateAvatar()) {
                     this.changeCurrentCard(+1)
                 }
                 break;
@@ -129,6 +166,20 @@ export default class App extends React.Component {
         return Object.keys(errors).length === 0
     };
 
+    validateAvatar = function () {
+        const errors = {};
+        let values = this.state.values;
+        if (!values.loaded) {
+            errors.avatar = "Required";
+        }
+
+        this.setState({
+            errors: errors
+        });
+
+        return Object.keys(errors).length === 0
+    };
+
     changeCurrentCard = (value) => {
         this.setState({
             currentCard: this.state.currentCard + value
@@ -163,12 +214,14 @@ export default class App extends React.Component {
                             errors={this.state.errors}
                             onChange={this.onChange}/>)}
 
-                        {/*
-                        {this.state.currentCard === 2 &&
-                        (<Avatar setClick={click => this.cardsActions[3] = click}/>)}
+                        {this.state.currentCard === 3 &&
+                        (<Avatar
+                            values={this.state.values}
+                            errors={this.state.errors}
+                            onChangeAvatar={this.onChangeAvatar}/>)}
 
-                        {this.state.currentCard === 2 &&
-                        (<Finish result={this.state.result}/>)}*/}
+                        {this.state.currentCard === 4 &&
+                        (<Finish values={this.state.values}/>)}
                     </div>
                     <ControlButtons
                         currentCard={this.state.currentCard}

@@ -12,12 +12,11 @@ let new_cities = Object.keys(cities).map(function (key) {
 export default class Contacts extends React.Component {
 
     getCities = () => {
-        return new_cities.filter(sity => sity.country == this.props.values.country);
+        return new_cities.filter(city => city.country === this.props.values.country);
     };
 
     render() {
-        let values = this.props.values;
-        let errors = this.props.errors;
+        let {values, errors} = this.props;
         return (
             <div className="form card-body">
                 <Field
