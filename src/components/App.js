@@ -4,7 +4,9 @@ import Basic from "./Basic";
 import Contacts from "./Contacts";
 import Avatar from "./Avatar";
 import Finish from "./Finish";
+import {validateEmail, validateMobile} from "./Helpers/ContactValidators"
 import ControlButtons from "./ControlButtons";
+import countries from "../data/countries";
 
 export default class App extends React.Component {
 
@@ -18,12 +20,22 @@ export default class App extends React.Component {
                 password: "",
                 repeatPassword: "",
                 gender: "male",
+
+                email: "",
+                mobile: "",
+                country: countries[0].id,
+                city: "",
             },
             errors: {
                 firstname: false,
                 lastname: false,
                 password: false,
                 repeatPassword: false,
+
+                email: false,
+                mobile: false,
+                country: false,
+                city: false,
             },
 
             currentCard: 1,
@@ -43,10 +55,17 @@ export default class App extends React.Component {
     };
 
     submit = () => {
-        if (this.state.currentCard === 1) {
-            if (this.validateBasic()) {
-                this.changeCurrentCard(+1)
-            }
+        switch(this.state.currentCard) {
+            case 1:
+                if (this.validateBasic()) {
+                    this.changeCurrentCard(+1)
+                }
+                break;
+            case 2:
+                if (this.validateContacts()) {
+                    this.changeCurrentCard(+1)
+                }
+                break;
         }
     };
 
@@ -82,15 +101,32 @@ export default class App extends React.Component {
         return Object.keys(errors).length === 0
     };
 
-    createCardNumbers = () => {
-        let cardNumbers = [];
-        for (let i = 0; i < 4; i++) {
-            cardNumbers.push(<CardNumber
-                key={i}
-                number={i + 1}
-                position={this.state.currentCard}/>);
+    validateContacts = function () {
+        const errors = {};
+        let values = this.state.values;
+        let emailValidation = validateEmail(values.email);
+        if (!values.email) {
+            errors.email = "Required";
+        } else if (!emailValidation) {
+            errors.email = "Invalid email address";
         }
-        return cardNumbers;
+
+        let mobileValidation = validateMobile(values.mobile);
+        if (!values.mobile) {
+            errors.mobile = "Required";
+        } else if (!mobileValidation) {
+            errors.mobile = "Invalid mobile";
+        }
+
+        if (!values.city) {
+            errors.city = "Required";
+        }
+
+        this.setState({
+            errors: errors
+        });
+
+        return Object.keys(errors).length === 0
     };
 
     changeCurrentCard = (value) => {
@@ -106,17 +142,28 @@ export default class App extends React.Component {
                     <div className="card-header">
                         <div className="container">
                             <div className="row justify-content-md-center">
-                                {this.createCardNumbers()}
+                                {[1,2,3,4].map((number) => <CardNumber
+                                    key={number}
+                                    number={number}
+                                    position={this.state.currentCard}/>)}
                             </div>
                         </div>
                     </div>
                     <div className="card-block">
                         {this.state.currentCard === 1 &&
-                        (<Basic values={this.state.values} errors={this.state.errors} onChange={this.onChange}/>)}
+                        (<Basic
+                            values={this.state.values}
+                            errors={this.state.errors}
+                            onChange={this.onChange}/>)}
 
-                        {/*{this.state.currentCard === 2 &&
-                        (<Contacts setClick={click => this.cardsActions[2] = click}/>)}
+                        {this.state.currentCard === 2 &&
+                        (<Contacts
+                            currentCard={this.state.currentCard}
+                            values={this.state.values}
+                            errors={this.state.errors}
+                            onChange={this.onChange}/>)}
 
+                        {/*
                         {this.state.currentCard === 2 &&
                         (<Avatar setClick={click => this.cardsActions[3] = click}/>)}
 
