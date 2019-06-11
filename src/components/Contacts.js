@@ -12,7 +12,7 @@ let new_cities = Object.keys(cities).map(function (key) {
 export default class Contacts extends React.Component {
 
     getCities = () => {
-        return new_cities.filter(city => city.country === this.props.values.country);
+        return new_cities.filter(city => city.country === parseInt(this.props.values.country));
     };
 
     render() {
