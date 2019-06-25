@@ -26,8 +26,7 @@ export default class App extends React.Component {
                 country: countries[0].id,
                 city: "",
 
-                avatar: "https://reactwarriors.github.io/reactwarriors-stage-2/static/media/default-avatar.59337bae.png",
-                loaded: true,
+                avatar: null,
             },
             errors: {
                 firstname: false,
@@ -48,21 +47,15 @@ export default class App extends React.Component {
     }
 
     onChange = event => {
-        let values = {...this.state.values};
-        values[event.target.name] = event.target.value;
-        this.setState({values});
-    };
-
-    onChangeAvatar = event => {
-        const reader = new FileReader();
-        reader.onload = event => {
-            let values = {...this.state.values};
-            values['avatar'] = event.target.result;
-            values['loaded'] = true;
-            this.setState({values});
-        };
-
-        reader.readAsDataURL(event.target.files[0]);
+        let name = event.target.name;
+        let value = event.target.value;
+        this.setState(prevState => {
+            let state = {
+                ...prevState,
+            };
+            state.values[name] = value;
+            return state;
+        })
     };
 
     reset = () => {
@@ -87,23 +80,30 @@ export default class App extends React.Component {
     };
 
     submit = () => {
-        switch(this.state.currentCard) {
+        let errors = this.getErrorsByValue();
+        this.setState({
+            errors: errors
+        });
+
+        if (Object.keys(errors).length === 0) {
+            this.changeCurrentCard(+1)
+        }
+    };
+
+    getErrorsByValue(){
+        let errors = {};
+        switch (this.state.currentCard) {
             case 1:
-                if (this.validateBasic()) {
-                    this.changeCurrentCard(+1)
-                }
+                errors = this.validateBasic();
                 break;
             case 2:
-                if (this.validateContacts()) {
-                    this.changeCurrentCard(+1)
-                }
+                errors = this.validateContacts();
                 break;
             case 3:
-                if (this.validateAvatar()) {
-                    this.changeCurrentCard(+1)
-                }
+                errors = this.validateAvatar();
                 break;
         }
+        return errors;
     };
 
     validateBasic = () => {
@@ -131,11 +131,7 @@ export default class App extends React.Component {
             errors.repeatPassword = "Must be equal password";
         }
 
-        this.setState({
-            errors: errors
-        });
-
-        return Object.keys(errors).length === 0
+        return errors
     };
 
     validateContacts = function () {
@@ -159,25 +155,17 @@ export default class App extends React.Component {
             errors.city = "Required";
         }
 
-        this.setState({
-            errors: errors
-        });
-
-        return Object.keys(errors).length === 0
+        return errors
     };
 
     validateAvatar = function () {
         const errors = {};
         let values = this.state.values;
-        if (!values.loaded) {
+        if (!values.avatar) {
             errors.avatar = "Required";
         }
 
-        this.setState({
-            errors: errors
-        });
-
-        return Object.keys(errors).length === 0
+        return errors
     };
 
     changeCurrentCard = (value) => {
@@ -193,7 +181,7 @@ export default class App extends React.Component {
                     <div className="card-header">
                         <div className="container">
                             <div className="row justify-content-md-center">
-                                {[1,2,3,4].map((number) => <CardNumber
+                                {[1, 2, 3, 4].map((number) => <CardNumber
                                     key={number}
                                     number={number}
                                     position={this.state.currentCard}/>)}
@@ -218,7 +206,7 @@ export default class App extends React.Component {
                         (<Avatar
                             values={this.state.values}
                             errors={this.state.errors}
-                            onChangeAvatar={this.onChangeAvatar}/>)}
+                            onChange={this.onChange}/>)}
 
                         {this.state.currentCard === 4 &&
                         (<Finish values={this.state.values}/>)}
